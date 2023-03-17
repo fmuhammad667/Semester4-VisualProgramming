@@ -1,0 +1,143 @@
+Public Class FrmItem
+    Dim SQL As String
+    Dim Process As New ClsConnection
+    Dim tblItem As DataTable
+    Sub Data_Record()
+        tblItem = Process.ExecuteQuery("select * from TblItem order by no_item asc")
+        DGItem.DataSource = tblItem
+        DGItem.Columns(1).Width = 300
+    End Sub
+    Sub Code_Otomatic()
+        tblItem = Process.ExecuteQuery("select * from TblItem order by no_item desc")
+        If tblItem.Rows.Count = 0 Then
+            NoItemTxt.Text = "000001"
+        Else
+            With tblItem.Rows(0)
+                NoItemTxt.Text = .Item("No_Item")
+            End With
+
+            NoItemTxt.Text = Val(NoItemTxt.Text) + 1
+
+            Select Case Len(NoItemTxt.Text)
+                Case 1
+                    NoItemTxt.Text = "00000" & NoItemTxt.Text & ""
+                Case 2
+                    NoItemTxt.Text = "0000" & NoItemTxt.Text & ""
+                Case 3
+                    NoItemTxt.Text = "000" & NoItemTxt.Text & ""
+                Case 4
+                    NoItemTxt.Text = "00" & NoItemTxt.Text & ""
+                Case 5
+                    NoItemTxt.Text = "0" & NoItemTxt.Text & ""
+                Case 6
+                    NoItemTxt.Text = "" & NoItemTxt.Text & ""
+            End Select
+        End If
+    End Sub
+
+    Sub Arrange()
+        NmItemTxt.Text = ""
+        NmItemTxt.Focus()
+        CategoryTxt.Text = ""
+        UnitTxt.Text = ""
+        StockTxt.Text = "0"
+        Call Code_Otomatic()
+        Call Data_Record()
+        SaveBtn.Enabled = True
+        EditBtn.Enabled = False
+        DeleteBtn.Enabled = False
+    End Sub
+
+    Private Sub FrmItem_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Call Arrange()
+    End Sub
+
+    Private Sub SaveBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveBtn.Click
+        If NmItemTxt.Text = "" Then NmItemTxt.Focus() : Exit Sub
+        If CategoryTxt.Text = "" Then CategoryTxt.Focus() : Exit Sub
+        If UnitTxt.Text = "" Then UnitTxt.Focus() : Exit Sub
+        If StockTxt.Text = "" Then StockTxt.Focus() : Exit Sub
+
+        SQL = "Insert Into TblItem Values ('" & NoItemTxt.Text & "','" & NmItemTxt.Text & "','" & CategoryTxt.Text & "','" & UnitTxt.Text & "','" & StockTxt.Text & "')"
+        Process.ExecuteNonQuery(SQL)
+        MessageBox.Show("Data baru telah ditambahkan..!!", "Saving success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Call Arrange()
+    End Sub
+
+    Private Sub EditBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EditBtn.Click
+        If NmItemTxt.Text = "" Then NmItemTxt.Focus() : Exit Sub
+        If CategoryTxt.Text = "" Then CategoryTxt.Focus() : Exit Sub
+        If UnitTxt.Text = "" Then UnitTxt.Focus() : Exit Sub
+        If StockTxt.Text = "" Then StockTxt.Focus() : Exit Sub
+
+        SQL = "Update TblItem Set Name_Item = '" & NmItemTxt.Text & "', Category = '" & CategoryTxt.Text & "', Unit = '" & UnitTxt.Text & "',Stock = '" & StockTxt.Text & "'where No_Item = '" & NoItemTxt.Text & "'"
+        Process.ExecuteNonQuery(SQL)
+
+        MessageBox.Show("Data telah terubah..!!", "Changing Data Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Call Arrange()
+    End Sub
+
+    Private Sub DeleteBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DeleteBtn.Click
+        SQL = "Delete From TblItem where No_Item = '" & NoItemTxt.Text & "'"
+        Process.ExecuteNonQuery(SQL)
+        MessageBox.Show("Data telah terhapus..!!", "Deleting Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Call Arrange()
+    End Sub
+
+    Private Sub CancelBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CancelBtn.Click
+        Call Arrange()
+    End Sub
+
+    Private Sub DGItem_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles DGItem.CellDoubleClick
+        NoItemTxt.Text = DGItem.SelectedCells(0).Value
+        NmItemTxt.Text = DGItem.SelectedCells(1).Value
+        CategoryTxt.Text = DGItem.SelectedCells(2).Value
+        UnitTxt.Text = DGItem.SelectedCells(3).Value
+        StockTxt.Text = DGItem.SelectedCells(4).Value
+
+        SaveBtn.Enabled = False
+        EditBtn.Enabled = True
+        DeleteBtn.Enabled = True
+        CancelBtn.Enabled = True
+    End Sub
+
+    Private Sub FindTxt_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FindTxt.TextChanged
+        If NameRb.Checked = True Then
+            tblItem = Process.ExecuteQuery("Select * from TblItem Where Name_Item Like '%" & FindTxt.Text & "%'")
+            If tblItem.Rows.Count = 0 Then
+                DGItem.DataSource = tblItem
+                FindTxt.Focus()
+            Else
+                DGItem.DataSource = tblItem
+            End If
+        ElseIf CategoryRb.Checked = True Then
+            tblItem = Process.ExecuteQuery("Select * from TblItem Where Category Like '%" & FindTxt.Text & "%'")
+            If tblItem.Rows.Count = 0 Then
+                DGItem.DataSource = tblItem
+                FindTxt.Focus()
+            Else
+                DGItem.DataSource = tblItem
+            End If
+        ElseIf UnitRb.Checked = True Then
+            tblItem = Process.ExecuteQuery("Select * from TblItem Where Unit Like '%" & FindTxt.Text & "%'")
+            If tblItem.Rows.Count = 0 Then
+                DGItem.DataSource = tblItem
+                FindTxt.Focus()
+            Else
+                DGItem.DataSource = tblItem
+            End If
+        End If
+    End Sub
+
+    Private Sub CategoryRb_CheckedChanged(sender As Object, e As EventArgs) Handles CategoryRb.CheckedChanged
+
+    End Sub
+
+    Private Sub Label7_Click(sender As Object, e As EventArgs) Handles Label7.Click
+
+    End Sub
+
+    Private Sub StockTxt_TextChanged(sender As Object, e As EventArgs) Handles StockTxt.TextChanged
+
+    End Sub
+End Class
