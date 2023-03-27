@@ -1,0 +1,22 @@
+Public Class FrmMainMenu
+    Private Sub InputDataMobilToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles InputDataMobilToolStripMenuItem.Click
+        FrmDataMobil.MdiParent = Me
+        FrmDataMobil.Show()
+    End Sub
+
+    Private Sub InputDataPenyewaToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles InputDataPelangganToolStripMenuItem.Click
+        FrmDataPelanggan.MdiParent = Me
+        FrmDataPelanggan.Show()
+    End Sub
+
+    Private Sub FrmMainMenu_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        FrmDataPelanggan.MdiParent = Me
+        FrmDataPelanggan.Show()
+    End Sub
+    Private Sub ExitToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitToolStripMenuItem.Click
+        Dim Tanya = MessageBox.Show("Are you sure you want to exit the Program ?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        If Tanya = Windows.Forms.DialogResult.Yes Then
+            End
+        End If
+    End Sub
+End Class
