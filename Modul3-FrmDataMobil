@@ -2,11 +2,11 @@ Public Class FrmDataMobil
 
     Dim SQL As String
     Dim Process As New ClsConnection
-    Dim tblMobil As DataTable
+    Dim data_mobil As DataTable
     Sub Data_Record()
-        tblMobil = Process.ExecuteQuery("select * from data_mobil order by nomor_mobil asc")
-        DGMobil.DataSource = tblMobil
-        DGMobil.Columns(1).Width = 200
+        data_mobil = Process.ExecuteQuery("select * from data_mobil order by nomor_mobil asc")
+        DGMobil.DataSource = data_mobil
+        DGMobil.Columns(1).Width = 317
     End Sub
 
     Sub Arrange()
@@ -64,6 +64,26 @@ Public Class FrmDataMobil
         Process.ExecuteNonQuery(SQL)
         MessageBox.Show("Data telah terhapus..!!", "Deleting Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Call Arrange()
+    End Sub
+
+    Private Sub FindTxt_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FindTxt.TextChanged
+        If NoRb.Checked = True Then
+            data_mobil = Process.ExecuteQuery("Select * from data_mobil Where nomor_mobil Like '%" & FindTxt.Text & "%'")
+            If data_mobil.Rows.Count = 0 Then
+                DGMobil.DataSource = data_mobil
+                FindTxt.Focus()
+            Else
+                DGMobil.DataSource = data_mobil
+            End If
+        ElseIf JenisRb.Checked = True Then
+            data_mobil = Process.ExecuteQuery("Select * from data_mobil Where jenis_mobil Like '%" & FindTxt.Text & "%'")
+            If data_mobil.Rows.Count = 0 Then
+                DGMobil.DataSource = data_mobil
+                FindTxt.Focus()
+            Else
+                DGMobil.DataSource = data_mobil
+            End If
+        End If
     End Sub
 
 End Class
