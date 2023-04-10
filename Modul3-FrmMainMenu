@@ -13,16 +13,18 @@ Public Class FrmMainMenu
         FrmDataPelanggan.MdiParent = Me
         FrmDataPelanggan.Show()
     End Sub
-    
     Private Sub ExitToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitToolStripMenuItem.Click
         Dim Tanya = MessageBox.Show("Are you sure you want to exit the Program ?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
         If Tanya = Windows.Forms.DialogResult.Yes Then
             End
         End If
     End Sub
-    
     Private Sub AboutToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AboutToolStripMenuItem.Click
         FrmAbout.MdiParent = Me
         FrmAbout.Show()
+    End Sub
+    Private Sub TransaksiToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TransaksiToolStripMenuItem.Click
+        FrmTransaksiRental.MdiParent = Me
+        FrmTransaksiRental.Show()
     End Sub
 End Class
