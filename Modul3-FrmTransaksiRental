@@ -7,7 +7,7 @@ Public Class FrmTransaksiRental
     Sub Code_Otomatic()
         tblTransaksi = Process.ExecuteQuery("select * from transaksi_rental order by id_transaksi desc")
         If tblTransaksi.Rows.Count = 0 Then
-            IdTransaksiTxt.Text = "00000001"
+            IdTransaksiTxt.Text = "TRN00001"
         Else
             With tblTransaksi.Rows(0)
                 IdTransaksiTxt.Text = .Item("id_transaksi")
@@ -16,15 +16,15 @@ Public Class FrmTransaksiRental
             IdTransaksiTxt.Text = Val(Microsoft.VisualBasic.Right(IdTransaksiTxt.Text, 5)) + 1
             Select Case Len(IdTransaksiTxt.Text)
                 Case 1
-                    IdTransaksiTxt.Text = "0000000" & IdTransaksiTxt.Text & ""
+                    IdTransaksiTxt.Text = "TRN0000" & IdTransaksiTxt.Text & ""
                 Case 2
-                    IdTransaksiTxt.Text = "000000" & IdTransaksiTxt.Text & ""
+                    IdTransaksiTxt.Text = "TRN000" & IdTransaksiTxt.Text & ""
                 Case 3
-                    IdTransaksiTxt.Text = "00000" & IdTransaksiTxt.Text & ""
+                    IdTransaksiTxt.Text = "TRN00" & IdTransaksiTxt.Text & ""
                 Case 4
-                    IdTransaksiTxt.Text = "0000" & IdTransaksiTxt.Text & ""
+                    IdTransaksiTxt.Text = "TRN0" & IdTransaksiTxt.Text & ""
                 Case 5
-                    IdTransaksiTxt.Text = "000" & IdTransaksiTxt.Text & ""
+                    IdTransaksiTxt.Text = "TRN" & IdTransaksiTxt.Text & ""
             End Select
         End If
     End Sub
@@ -32,11 +32,11 @@ Public Class FrmTransaksiRental
     Sub Data_Record()
         tblTransaksi = Process.ExecuteQuery("select * from transaksi_rental order by id_transaksi asc")
         DGTransaksi.DataSource = tblTransaksi
-        DGTransaksi.Columns(0).Width = 70
-        DGTransaksi.Columns(1).Width = 70
-        DGTransaksi.Columns(2).Width = 130
+        DGTransaksi.Columns(0).Width = 40
+        DGTransaksi.Columns(1).Width = 40
+        DGTransaksi.Columns(2).Width = 140
         DGTransaksi.Columns(3).Width = 120
-        DGTransaksi.Columns(4).Width = 205
+        DGTransaksi.Columns(4).Width = 260
     End Sub
 
     Sub mobil()
@@ -132,7 +132,24 @@ Public Class FrmTransaksiRental
         Call Arrange()
     End Sub
 
-    Private Sub DGTransaksi_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DGTransaksi.CellContentClick
-
+    Private Sub FindTxt_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FindTxt.TextChanged
+        If NamaPelangganRb.Checked = True Then
+            tblTransaksi = Process.ExecuteQuery("Select * from transaksi_rental Where id_pelanggan Like '%" & FindTxt.Text & "%'")
+            If tblTransaksi.Rows.Count = 0 Then
+                DGTransaksi.DataSource = tblTransaksi
+                FindTxt.Focus()
+            Else
+                DGTransaksi.DataSource = tblTransaksi
+            End If
+        ElseIf TanggalTransaksiRb.Checked = True Then
+            tblTransaksi = Process.ExecuteQuery("Select * from transaksi_rental Where tanggal_sewa Like '%" & FindTxt.Text & "%'")
+            If tblTransaksi.Rows.Count = 0 Then
+                DGTransaksi.DataSource = tblTransaksi
+                FindTxt.Focus()
+            Else
+                DGTransaksi.DataSource = tblTransaksi
+            End If
+        End If
     End Sub
+
 End Class
