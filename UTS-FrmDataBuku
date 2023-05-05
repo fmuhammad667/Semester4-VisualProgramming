@@ -1,0 +1,127 @@
+Public Class FrmDataBuku
+
+    Dim SQL As String
+    Dim Process As New ClsConnection
+    Dim data_buku As DataTable
+    Sub Data_Record()
+        data_buku = Process.ExecuteQuery("select * from data_buku order by kode_buku asc")
+        DGBuku.DataSource = data_buku
+        DGBuku.Columns(1).Width = 400
+    End Sub
+
+    Sub Code_Otomatic()
+        data_buku = Process.ExecuteQuery("select * from data_buku order by kode_buku desc")
+        If data_buku.Rows.Count = 0 Then
+            KodeBukuTxt.Text = "B00001"
+        Else
+            With data_buku.Rows(0)
+                KodeBukuTxt.Text = .Item("kode_buku")
+            End With
+
+            KodeBukuTxt.Text = Val(Microsoft.VisualBasic.Right(KodeBukuTxt.Text, 5)) + 1
+            Select Case Len(KodeBukuTxt.Text)
+                Case 1
+                    KodeBukuTxt.Text = "B0000" & KodeBukuTxt.Text & ""
+                Case 2
+                    KodeBukuTxt.Text = "B000" & KodeBukuTxt.Text & ""
+                Case 3
+                    KodeBukuTxt.Text = "B00" & KodeBukuTxt.Text & ""
+                Case 4
+                    KodeBukuTxt.Text = "B0" & KodeBukuTxt.Text & ""
+                Case 5
+                    KodeBukuTxt.Text = "B" & KodeBukuTxt.Text & ""
+            End Select
+        End If
+    End Sub
+
+    Sub Arrange()
+        KodeBukuTxt.Text = ""
+        JenisBukuTxt.Text = ""
+        JudulBukuTxt.Text = ""
+        PenulisTxt.Text = ""
+        PenerbitTxt.Text = ""
+        Call Data_Record()
+        Call Code_Otomatic()
+        SaveBtn.Enabled = True
+        UpdateBtn.Enabled = False
+        DeleteBtn.Enabled = False
+    End Sub
+
+    Private Sub FrmDataBuku_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Call Arrange()
+    End Sub
+
+    Private Sub DGBuku_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles DGBuku.CellDoubleClick
+        KodeBukuTxt.Text = DGBuku.SelectedCells(0).Value
+        JenisBukuTxt.Text = DGBuku.SelectedCells(1).Value
+        JudulBukuTxt.Text = DGBuku.SelectedCells(2).Value
+        PenulisTxt.Text = DGBuku.SelectedCells(3).Value
+        PenerbitTxt.Text = DGBuku.SelectedCells(4).Value
+        SaveBtn.Enabled = False
+        UpdateBtn.Enabled = True
+        DeleteBtn.Enabled = True
+    End Sub
+
+    Private Sub SaveBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveBtn.Click
+        If KodeBukuTxt.Text = "" Then KodeBukuTxt.Focus() : Exit Sub
+        If JenisBukuTxt.Text = "" Then JenisBukuTxt.Focus() : Exit Sub
+        If JudulBukuTxt.Text = "" Then JudulBukuTxt.Focus() : Exit Sub
+        If PenulisTxt.Text = "" Then PenulisTxt.Focus() : Exit Sub
+        If PenerbitTxt.Text = "" Then PenerbitTxt.Focus() : Exit Sub
+
+        SQL = "Insert Into data_buku Values ('" & KodeBukuTxt.Text & "','" & JenisBukuTxt.Text & "','" & JudulBukuTxt.Text & "','" & PenulisTxt.Text & "','" & PenerbitTxt.Text & "')"
+        Process.ExecuteNonQuery(SQL)
+        MessageBox.Show("Data baru telah ditambahkan..!!", "Saving success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Call Arrange()
+    End Sub
+
+    Private Sub UpdateBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UpdateBtn.Click
+        If KodeBukuTxt.Text = "" Then KodeBukuTxt.Focus() : Exit Sub
+        If JenisBukuTxt.Text = "" Then JenisBukuTxt.Focus() : Exit Sub
+        If JudulBukuTxt.Text = "" Then JudulBukuTxt.Focus() : Exit Sub
+        If PenulisTxt.Text = "" Then PenulisTxt.Focus() : Exit Sub
+        If PenerbitTxt.Text = "" Then PenerbitTxt.Focus() : Exit Sub
+
+        SQL = "Update data_buku Set kode_buku = '" & KodeBukuTxt.Text & "', jenis_buku = '" & JenisBukuTxt.Text & "', judul_buku = '" & JudulBukuTxt.Text & "', penulis = '" & PenulisTxt.Text & "', penerbit = '" & PenerbitTxt.Text & "'where kode_buku = '" & KodeBukuTxt.Text & "'"
+        Process.ExecuteNonQuery(SQL)
+
+        MessageBox.Show("Data telah terubah..!!", "Changing Data Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Call Arrange()
+    End Sub
+
+    Private Sub DeleteBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DeleteBtn.Click
+        SQL = "Delete From data_buku where kode_buku = '" & KodeBukuTxt.Text & "'"
+        Process.ExecuteNonQuery(SQL)
+        MessageBox.Show("Data telah terhapus..!!", "Deleting Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Call Arrange()
+    End Sub
+
+    Private Sub FindTxt_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FindTxt.TextChanged
+        If RBBuku.Checked = True Then
+            data_buku = Process.ExecuteQuery("Select * from data_buku Where kode_buku Like '%" & FindTxt.Text & "%'")
+            If data_buku.Rows.Count = 0 Then
+                DGBuku.DataSource = data_buku
+                FindTxt.Focus()
+            Else
+                DGBuku.DataSource = data_buku
+            End If
+        ElseIf RBJudulBuku.Checked = True Then
+            data_buku = Process.ExecuteQuery("Select * from data_buku Where judul_buku Like '%" & FindTxt.Text & "%'")
+            If data_buku.Rows.Count = 0 Then
+                DGBuku.DataSource = DGBuku
+                FindTxt.Focus()
+            Else
+                DGBuku.DataSource = data_buku
+            End If
+        ElseIf RBPenulis.Checked = True Then
+            data_buku = Process.ExecuteQuery("Select * from data_buku Where penulis Like '%" & FindTxt.Text & "%'")
+            If data_buku.Rows.Count = 0 Then
+                DGBuku.DataSource = DGBuku
+                FindTxt.Focus()
+            Else
+                DGBuku.DataSource = data_buku
+            End If
+        End If
+    End Sub
+
+End Class
