@@ -1,0 +1,126 @@
+Public Class FrmDataAnggota
+
+    Dim SQL As String
+    Dim Process As New ClsConnection
+    Dim data_anggota_perpustakaan As DataTable
+    Sub Data_Record()
+        data_anggota_perpustakaan = Process.ExecuteQuery("select * from data_anggota_perpustakaan order by kode_anggota asc")
+        DGAnggota.DataSource = data_anggota_perpustakaan
+        DGAnggota.Columns(1).Width = 400
+    End Sub
+
+    Sub Code_Otomatic()
+        data_anggota_perpustakaan = Process.ExecuteQuery("select * from data_anggota_perpustakaan order by kode_anggota desc")
+        If data_anggota_perpustakaan.Rows.Count = 0 Then
+            KodeAnggotaTxt.Text = "A00001"
+        Else
+            With data_anggota_perpustakaan.Rows(0)
+                KodeAnggotaTxt.Text = .Item("kode_anggota")
+            End With
+
+            KodeAnggotaTxt.Text = Val(Microsoft.VisualBasic.Right(KodeAnggotaTxt.Text, 5)) + 1
+            Select Case Len(KodeAnggotaTxt.Text)
+                Case 1
+                    KodeAnggotaTxt.Text = "A0000" & KodeAnggotaTxt.Text & ""
+                Case 2
+                    KodeAnggotaTxt.Text = "A000" & KodeAnggotaTxt.Text & ""
+                Case 3
+                    KodeAnggotaTxt.Text = "A00" & KodeAnggotaTxt.Text & ""
+                Case 4
+                    KodeAnggotaTxt.Text = "A0" & KodeAnggotaTxt.Text & ""
+                Case 5
+                    KodeAnggotaTxt.Text = "A" & KodeAnggotaTxt.Text & ""
+            End Select
+        End If
+    End Sub
+
+    Sub Arrange()
+        KodeAnggotaTxt.Text = ""
+        NamaTxt.Text = ""
+        TanggalLahirTxt.Text = ""
+        NoHpTxt.Text = ""
+        AlamatTxt.Text = ""
+        Call Data_Record()
+        Call Code_Otomatic()
+        SaveBtn.Enabled = True
+        EditBtn.Enabled = False
+        DeleteBtn.Enabled = False
+    End Sub
+
+    Private Sub FrmDataAnggota_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Call Arrange()
+    End Sub
+
+    Private Sub DGAnggota_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles DGAnggota.CellDoubleClick
+        KodeAnggotaTxt.Text = DGAnggota.SelectedCells(0).Value
+        NamaTxt.Text = DGAnggota.SelectedCells(1).Value
+        TanggalLahirTxt.Text = DGAnggota.SelectedCells(2).Value
+        NoHpTxt.Text = DGAnggota.SelectedCells(3).Value
+        AlamatTxt.Text = DGAnggota.SelectedCells(4).Value
+        SaveBtn.Enabled = False
+        EditBtn.Enabled = True
+        DeleteBtn.Enabled = True
+    End Sub
+
+    Private Sub SaveBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveBtn.Click
+        If KodeAnggotaTxt.Text = "" Then KodeAnggotaTxt.Focus() : Exit Sub
+        If NamaTxt.Text = "" Then NamaTxt.Focus() : Exit Sub
+        If TanggalLahirTxt.Text = "" Then TanggalLahirTxt.Focus() : Exit Sub
+        If NoHpTxt.Text = "" Then NoHpTxt.Focus() : Exit Sub
+        If AlamatTxt.Text = "" Then AlamatTxt.Focus() : Exit Sub
+
+        SQL = "Insert Into data_anggota_perpustakaan Values ('" & KodeAnggotaTxt.Text & "','" & NamaTxt.Text & "','" & TanggalLahirTxt.Text & "','" & NoHpTxt.Text & "','" & AlamatTxt.Text & "')"
+        Process.ExecuteNonQuery(SQL)
+        MessageBox.Show("Data baru telah ditambahkan..!!", "Saving success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Call Arrange()
+    End Sub
+
+    Private Sub UpdateBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EditBtn.Click
+        If KodeAnggotaTxt.Text = "" Then KodeAnggotaTxt.Focus() : Exit Sub
+        If NamaTxt.Text = "" Then NamaTxt.Focus() : Exit Sub
+        If TanggalLahirTxt.Text = "" Then TanggalLahirTxt.Focus() : Exit Sub
+        If NoHpTxt.Text = "" Then NoHpTxt.Focus() : Exit Sub
+        If AlamatTxt.Text = "" Then AlamatTxt.Focus() : Exit Sub
+
+        SQL = "Update data_anggota_perpustakaan Set kode_anggota = '" & KodeAnggotaTxt.Text & "', nama_anggota = '" & NamaTxt.Text & "', tanggal_lahir = '" & TanggalLahirTxt.Text & "', nomor_kontak = '" & NoHpTxt.Text & "', alamat = '" & AlamatTxt.Text & "'where kode_anggota = '" & KodeAnggotaTxt.Text & "'"
+        Process.ExecuteNonQuery(SQL)
+
+        MessageBox.Show("Data telah terubah..!!", "Changing Data Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Call Arrange()
+    End Sub
+
+    Private Sub DeleteBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DeleteBtn.Click
+        SQL = "Delete From data_anggota_perpustakaan where kode_anggota = '" & KodeAnggotaTxt.Text & "'"
+        Process.ExecuteNonQuery(SQL)
+        MessageBox.Show("Data telah terhapus..!!", "Deleting Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Call Arrange()
+    End Sub
+
+    Private Sub FindTxt_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FindTxt.TextChanged
+        If RBKodeAnggota.Checked = True Then
+            data_anggota_perpustakaan = Process.ExecuteQuery("Select * from data_anggota_perpustakaan Where kode_anggota Like '%" & FindTxt.Text & "%'")
+            If data_anggota_perpustakaan.Rows.Count = 0 Then
+                DGAnggota.DataSource = data_anggota_perpustakaan
+                FindTxt.Focus()
+            Else
+                DGAnggota.DataSource = data_anggota_perpustakaan
+            End If
+        ElseIf RBNama.Checked = True Then
+            data_anggota_perpustakaan = Process.ExecuteQuery("Select * from data_anggota_perpustakaan Where nama_anggota Like '%" & FindTxt.Text & "%'")
+            If data_anggota_perpustakaan.Rows.Count = 0 Then
+                DGAnggota.DataSource = DGAnggota
+                FindTxt.Focus()
+            Else
+                DGAnggota.DataSource = data_anggota_perpustakaan
+            End If
+        ElseIf RBAlamat.Checked = True Then
+            data_anggota_perpustakaan = Process.ExecuteQuery("Select * from data_anggota_perpustakaan Where alamat Like '%" & FindTxt.Text & "%'")
+            If data_anggota_perpustakaan.Rows.Count = 0 Then
+                DGAnggota.DataSource = DGAnggota
+                FindTxt.Focus()
+            Else
+                DGAnggota.DataSource = data_anggota_perpustakaan
+            End If
+        End If
+    End Sub
+End Class
