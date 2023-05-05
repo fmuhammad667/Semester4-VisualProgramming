@@ -1,0 +1,156 @@
+Public Class FrmTransaksiPeminjaman
+
+    Dim SQL As String
+    Dim Process As New ClsConnection
+    Dim transaksi_peminjaman_buku As DataTable
+
+    Sub Code_Otomatic()
+        transaksi_peminjaman_buku = Process.ExecuteQuery("select * from transaksi_peminjaman_buku order by kode_transaksi desc")
+        If transaksi_peminjaman_buku.Rows.Count = 0 Then
+            KodeTransaksiTxt.Text = "TRN00001"
+        Else
+            With transaksi_peminjaman_buku.Rows(0)
+                KodeTransaksiTxt.Text = .Item("kode_transaksi")
+            End With
+
+            KodeTransaksiTxt.Text = Val(Microsoft.VisualBasic.Right(KodeTransaksiTxt.Text, 5)) + 1
+            Select Case Len(KodeTransaksiTxt.Text)
+                Case 1
+                    KodeTransaksiTxt.Text = "TRN0000" & KodeTransaksiTxt.Text & ""
+                Case 2
+                    KodeTransaksiTxt.Text = "TRN000" & KodeTransaksiTxt.Text & ""
+                Case 3
+                    KodeTransaksiTxt.Text = "TRN00" & KodeTransaksiTxt.Text & ""
+                Case 4
+                    KodeTransaksiTxt.Text = "TRN0" & KodeTransaksiTxt.Text & ""
+                Case 5
+                    KodeTransaksiTxt.Text = "TRN" & KodeTransaksiTxt.Text & ""
+            End Select
+        End If
+    End Sub
+
+    Sub Data_Record()
+        transaksi_peminjaman_buku = Process.ExecuteQuery("select * from transaksi_peminjaman_buku order by kode_transaksi asc")
+        DGTransaksi.DataSource = transaksi_peminjaman_buku
+        DGTransaksi.Columns(0).Width = 40
+        DGTransaksi.Columns(1).Width = 40
+        DGTransaksi.Columns(2).Width = 140
+        DGTransaksi.Columns(3).Width = 120
+        DGTransaksi.Columns(4).Width = 260
+    End Sub
+
+    Sub buku()
+        transaksi_peminjaman_buku = Process.ExecuteQuery("Select * from data_buku order by kode_buku asc")
+        If transaksi_peminjaman_buku.Rows.Count = 0 Then
+        Else
+            CbKodeBuku.Items.Clear()
+            With transaksi_peminjaman_buku.Columns(0)
+                For a = 0 To transaksi_peminjaman_buku.Rows.Count - 1
+                    CbKodeBuku.Items.Add("" & .Table.Rows(a).Item(0) & "/" & .Table.Rows(a).Item(1) & "")
+                Next a
+            End With
+        End If
+    End Sub
+
+    Sub anggota()
+        transaksi_peminjaman_buku = Process.ExecuteQuery("Select * from data_anggota_perpustakaan order by kode_anggota asc")
+        If transaksi_peminjaman_buku.Rows.Count = 0 Then
+        Else
+            CbKodeAnggota.Items.Clear()
+            With transaksi_peminjaman_buku.Columns(0)
+                For a = 0 To transaksi_peminjaman_buku.Rows.Count - 1
+                    CbKodeAnggota.Items.Add("" & .Table.Rows(a).Item(0) & "/" & .Table.Rows(a).Item(1) & "")
+                Next a
+            End With
+        End If
+    End Sub
+
+    Sub Arrange()
+        KodeTransaksiTxt.Text = ""
+        TanggalPinjamTxt.Text = ""
+        TanggalKembaliTxt.Text = ""
+
+        JudulBukuTxt.Enabled = False
+        NamaTxt.Enabled = False
+
+        CbKodeBuku.Text = ""
+        CbKodeAnggota.Text = ""
+        Call Code_Otomatic()
+        Call Data_Record()
+        Call anggota()
+        Call buku()
+    End Sub
+
+    Private Sub CbKodeBuku_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles CbKodeBuku.TextChanged
+        transaksi_peminjaman_buku = Process.ExecuteQuery("Select * from data_buku where kode_buku = '" & Microsoft.VisualBasic.Left(CbKodeBuku.Text, 7) & "' order by kode_buku asc")
+        If transaksi_peminjaman_buku.Rows.Count = 0 Then
+        Else
+            With transaksi_peminjaman_buku.Rows(0)
+                JudulBukuTxt.Text = .Item("judul_buku")
+            End With
+        End If
+    End Sub
+
+    Private Sub CbKodeAnggota_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles CbKodeAnggota.TextChanged
+        transaksi_peminjaman_buku = Process.ExecuteQuery("Select * from data_anggota_perpustakaan where kode_anggota = '" & Microsoft.VisualBasic.Left(CbKodeAnggota.Text, 7) & "' order by kode_anggota asc")
+        If transaksi_peminjaman_buku.Rows.Count = 0 Then
+        Else
+            With transaksi_peminjaman_buku.Rows(0)
+                NamaTxt.Text = .Item("nama_anggota")
+            End With
+        End If
+    End Sub
+
+    Private Sub FrmTransaksiPeminjaman_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Call Arrange()
+    End Sub
+
+    Private Sub SaveBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SaveBtn.Click
+        If KodeTransaksiTxt.Text = "" Then KodeTransaksiTxt.Focus() : Exit Sub
+        If TanggalPinjamTxt.Text = "" Then TanggalPinjamTxt.Focus() : Exit Sub
+        If TanggalKembaliTxt.Text = "" Then TanggalKembaliTxt.Focus() : Exit Sub
+        If JudulBukuTxt.Text = "" Then JudulBukuTxt.Focus() : Exit Sub
+        If NamaTxt.Text = "" Then NamaTxt.Focus() : Exit Sub
+
+        If CbKodeBuku.Text = "" Then CbKodeBuku.Focus() : Exit Sub
+        If CbKodeAnggota.Text = "" Then CbKodeAnggota.Focus() : Exit Sub
+
+        SQL = "Insert into transaksi_peminjaman_buku Values ('" & KodeTransaksiTxt.Text & "','" & TanggalPinjamTxt.Text & "','" & TanggalKembaliTxt.Text & "','" & CbKodeBuku.Text & "','" & CbKodeAnggota.Text & "','" & JudulBukuTxt.Text & "','" & NamaTxt.Text & "')"
+        Process.ExecuteNonQuery(SQL)
+
+        MessageBox.Show("Data Baru berhasil di Simpan ...!!", "Saving Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Call Arrange()
+    End Sub
+
+    Private Sub CancelBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CancelBtn.Click
+        Call Arrange()
+    End Sub
+
+    Private Sub FindTxt_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FindTxt.TextChanged
+        If RBKodeTransaksi.Checked = True Then
+            transaksi_peminjaman_buku = Process.ExecuteQuery("Select * from transaksi_peminjaman_buku Where kode_transaksi Like '%" & FindTxt.Text & "%'")
+            If transaksi_peminjaman_buku.Rows.Count = 0 Then
+                DGTransaksi.DataSource = transaksi_peminjaman_buku
+                FindTxt.Focus()
+            Else
+                DGTransaksi.DataSource = transaksi_peminjaman_buku
+            End If
+        ElseIf RBNamaAnggota.Checked = True Then
+            transaksi_peminjaman_buku = Process.ExecuteQuery("Select * from transaksi_peminjaman_buku Where nama_anggota Like '%" & FindTxt.Text & "%'")
+            If transaksi_peminjaman_buku.Rows.Count = 0 Then
+                DGTransaksi.DataSource = DGTransaksi
+                FindTxt.Focus()
+            Else
+                DGTransaksi.DataSource = transaksi_peminjaman_buku
+            End If
+        ElseIf RBJudulBuku.Checked = True Then
+            transaksi_peminjaman_buku = Process.ExecuteQuery("Select * from transaksi_peminjaman_buku Where judul_buku Like '%" & FindTxt.Text & "%'")
+            If transaksi_peminjaman_buku.Rows.Count = 0 Then
+                DGTransaksi.DataSource = DGTransaksi
+                FindTxt.Focus()
+            Else
+                DGTransaksi.DataSource = DGTransaksi
+            End If
+        End If
+    End Sub
+End Class
