@@ -1,0 +1,32 @@
+Public Class FrmMainMenu
+    Private Sub FrmMainMenu_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
+
+    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
+        Dim Tanya = MessageBox.Show("Apakah anda yakin keluar dari program ?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        If Tanya = Windows.Forms.DialogResult.Yes Then
+            End
+        End If
+    End Sub
+
+    Private Sub AboutToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AboutToolStripMenuItem.Click
+        FrmAbout.MdiParent = Me
+        FrmAbout.Show()
+    End Sub
+
+    Private Sub TransaksiPeminjamanToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles TransaksiPeminjamanToolStripMenuItem.Click
+        FrmTransaksiPeminjaman.MdiParent = Me
+        FrmTransaksiPeminjaman.Show()
+    End Sub
+
+    Private Sub DaftarAnggotaToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DaftarAnggotaToolStripMenuItem.Click
+        FrmDataAnggota.MdiParent = Me
+        FrmDataAnggota.Show()
+    End Sub
+
+    Private Sub BukuToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles BukuToolStripMenuItem.Click
+        FrmDataBuku.MdiParent = Me
+        FrmDataBuku.Show()
+    End Sub
+End Class
