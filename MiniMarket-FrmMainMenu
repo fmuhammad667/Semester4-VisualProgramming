@@ -1,0 +1,42 @@
+Public Class FrmMenuUtama
+
+    Private Sub FrmMenuUtama_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
+
+    Private Sub PenggunaToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles PenggunaToolStripMenuItem.Click
+        FrmPengguna.Show()
+    End Sub
+
+    Private Sub UbahPasswordToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles UbahPasswordToolStripMenuItem.Click
+        FrmUbahPassword.Show()
+    End Sub
+
+    Private Sub HakAksesToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles HakAksesToolStripMenuItem.Click
+        FrmHakAkses.Show()
+    End Sub
+
+    Private Sub KelompokToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles KelompokToolStripMenuItem.Click
+        FrmKelompok.Show()
+    End Sub
+
+    Private Sub SatuanToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SatuanToolStripMenuItem.Click
+        FrmSatuan.Show()
+    End Sub
+
+    Private Sub ToolStripButton1_Click(sender As Object, e As EventArgs) Handles ToolStripButton1.Click
+        FrmPengguna.Show()
+    End Sub
+
+    Private Sub ToolStripButton2_Click(sender As Object, e As EventArgs) Handles ToolStripButton2.Click
+        FrmHakAkses.Show()
+    End Sub
+
+    Private Sub ToolStripButton3_Click(sender As Object, e As EventArgs) Handles ToolStripButton3.Click
+        FrmBarang.Show()
+    End Sub
+
+    Private Sub BarangToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles BarangToolStripMenuItem.Click
+        FrmBarang.Show()
+    End Sub
+End Class
